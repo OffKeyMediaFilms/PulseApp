@@ -1,0 +1,37 @@
+import {earningsDashboard,enrollment,payoutConfirmation} from '../components/earnings.js';
+import {cameraScreen} from '../components/camera.js';
+import {getSceneVideos,createVideoState,countText} from '../utils/feed-state.js';
+import {icon} from '../components/icons.js';
+import {video,escapeHTML as e} from '../components/media.js';
+import {settings} from '../config/settings.js';
+export function renderView(s,state){
+ const user='<div class="user">'+(s.profileImage||settings.profileImage?'<img class="avatar" alt="Profile" src="'+e(s.profileImage||settings.profileImage)+'">':'<span class="avatar">'+e((s.username||settings.username)[0])+'</span>')+'<div><strong>'+e(s.username||settings.username)+'</strong><small>Pulse creator</small></div></div>';
+ const engagement='<div class="engagement action-rail"><button data-action="like" aria-label="Like" aria-pressed="'+String(!!state.liked)+'">'+icon('heart')+'<span data-count="likes">'+e(state.counts.likes)+'</span></button><button data-action="comments" aria-label="Comments">'+icon('comment')+'<span data-count="comments">'+e(state.counts.comments)+'</span></button><button data-action="share" aria-label="Share">'+icon('share')+'<span>Share</span></button><button data-action="bookmark" aria-label="Save video" aria-pressed="'+String(!!state.saved)+'">'+icon('bookmark')+'<span>Save</span></button></div>';
+ const clip=(v)=>{const vs=state.videoStates?.[v.id]||createVideoState(v);return '<article class="feed-card" data-video-id="'+e(v.id)+'" data-theme="'+e(v.theme)+'" style="--engagement-ms:'+Number(v.animationMs||180)+'ms">'+video(v.id,v.video)+'<div class="feed-copy"><div class="feed-account">'+(v.profileImage?'<img class="avatar" src="'+e(v.profileImage)+'" alt="Profile">':'<span class="avatar">'+e(v.username[0]||'P')+'</span>')+'<button class="profile-link" data-action="profile">@'+e(v.username)+'</button><button class="follow-button" data-action="follow" aria-pressed="'+!!vs.following+'">'+(vs.following?'Following':'Follow')+'</button></div><p class="caption">'+e(v.caption)+'</p><small><span data-count="views">'+countText(vs,'views')+'</span> views</small><button class="comment-preview" data-action="comments">'+e(v.comments[0]||'Edit comments here')+'</button></div><div class="engagement action-rail"><button data-action="like" aria-label="Like" aria-pressed="'+vs.liked+'">'+icon('heart')+'<span data-count="likes">'+countText(vs,'likes')+'</span></button><button data-action="comments" aria-label="Comments">'+icon('comment')+'<span data-count="comments">'+countText(vs,'comments')+'</span></button><button data-action="share" aria-label="Share">'+icon('share')+'<span data-count="shares">'+countText(vs,'shares')+'</span></button><button data-action="bookmark" aria-label="Save video" aria-pressed="'+vs.saved+'">'+icon('bookmark')+'<span>'+(vs.saved?'Saved':'Save')+'</span></button></div></article>'};
+ const feed=()=>'<nav class="tabs" aria-label="Feed tabs"><button class="selected" data-action="feed-tab" data-index="0">For You</button><button data-action="feed-tab" data-index="1">Following</button><button data-action="feed-tab" data-index="2">Discover</button></nav><div class="feed-track" tabindex="0" aria-label="Video feed">'+getSceneVideos(s).map(clip).join('')+'</div>';
+ const localMedia=s.localVideo?{src:s.localVideo.url,poster:'',aspect:'9 / 16'}:undefined;
+ const captureOptions='<div class="local-capture-options"><button class="primary" data-action="capture-record">Record Video</button><button data-action="capture-upload">Upload Video</button><button data-action="library">Saved Videos</button></div>';
+ const prompt=()=>'<section class="card prompt" id="prompt" '+(s.promptDelayMs?'hidden':'')+'><span class="prompt-symbol">ϟ</span><small>PULSE</small><h2>'+e(s.prompt||'Prompt appears here')+'</h2></section>';
+ switch(s.view){
+ case 'feed':return (s.id===1?'<button class="feed-refresh" data-action="refresh">↻ Refresh</button>':'')+(s.allowLive?'<button class="feed-live primary" data-action="go-live">Go live</button>':'')+feed();
+ case 'viral':return '<section class="viral-activity"><h2>Activity</h2><p>Followers · <span data-count="followers">'+e(state.counts.followers)+'</span></p><p id="growth" class="muted">Activity updating</p></section>'+feed();
+ case 'prompt':return prompt()+ '<article class="card media-screen">'+video(s.media,localMedia)+'</article>';
+ case 'signup':return enrollment(s,state);
+ case 'enrolled':return payoutConfirmation(s,true);
+ case 'earnings':return earningsDashboard(s);
+ case 'payout':return prompt()+earningsDashboard(s);
+ case 'payout-confirmation':return payoutConfirmation(s);
+ case 'media':return '<article class="card">'+video(s.media)+'</article>';
+ case 'record':return cameraScreen(s,false);
+ case 'preview':return '<section class="card" id="preview">'+video('recording')+'<button class="wide" data-action="delete">Delete recording</button><div id="delete-confirm" hidden><p>Delete recording?</p><button data-action="confirm-delete">Delete</button><button data-action="cancel-delete">Cancel</button></div></section><div id="confirmation" role="status"></div>';
+ case 'post':return captureOptions+'<section class="card">'+video(s.media)+'<label class="field">Caption<textarea rows="3" placeholder="Add a caption">'+e(s.caption||'')+'</textarea></label><button class="primary wide" data-action="post">Post</button><div id="upload" hidden><p>Uploading</p><progress id="upload-progress" max="100" value="0"></progress></div><div id="confirmation" role="status"></div>'+engagement+'<button class="wide" data-action="refresh">↻ Refresh</button><p id="growth" class="muted"></p></section>';
+ case 'live':return cameraScreen(s,true);
+ case 'reactions':return '<h2>Lena</h2><article class="card">'+video('lena')+engagement+'</article>'+'<h2>Reactions</h2><article class="card">'+video('reaction')+'</article><article class="card">'+video('clip')+'</article>';
+ case 'clips':return '<h2>Videos</h2><div class="clips">'+['clip','reaction','lena','recording'].map(k=>'<article class="card">'+video(k)+'</article>').join('')+'</div>';
+ case 'profile':return '<button class="wide" data-action="library">Saved Videos</button><section class="card">'+user+'<h2>'+e(s.username||settings.username)+'</h2><p>Followers · <span data-count="followers">'+e(state.counts.followers)+'</span></p><button data-action="earnings">Creator payouts</button></section><div class="profile-videos">'+getSceneVideos(s).map(v=>video(v.id,v.video)).join('')+'</div>';
+ case 'notifications':return '<section class="card"><h2>Notifications</h2>'+(s.notifications.length?s.notifications.map(n=>'<p>'+e(n.message)+'</p>').join(''):'<p>Notification appears here</p>')+'</section>';
+ default:return feed();
+ }
+}
+
+export function renderComments(s,state){return '<section class="sheet comments-sheet" id="comments" role="dialog" aria-modal="true" aria-label="Comments" hidden><div class="sheet-header"><h3>Comments</h3><button data-action="close-sheet" aria-label="Close comments">'+icon('close')+'</button></div><div class="comment-list">'+(s.comments||settings.comments).map(c=>'<p>'+e(c)+'</p>').join('')+'<div id="added-comments">'+(state.addedComments||[]).map(c=>'<p>'+e(c)+'</p>').join('')+'</div></div><label class="field">Add a comment<textarea id="comment-input" rows="2" placeholder="Add a comment"></textarea></label><button class="primary wide" data-action="add-comment">Send</button></section>'}

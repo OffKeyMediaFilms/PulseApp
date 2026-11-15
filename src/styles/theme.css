@@ -1,0 +1,14 @@
+/* Based on the original PULSE style.css: #080808, #ff2424, translucent panels, 8px edges.
+   Edit these shared variables to adjust branding without changing scene content. */
+:root {
+ color-scheme:dark;
+ --accent:#ff2424; --soft:rgba(255,36,36,.10); --bg:#080808;
+ --surface:#111; --text:#fff; --muted:#929292; --line:rgba(255,36,36,.22);
+ --danger:#ff2424; --panel:rgba(12,12,12,.94); --header:rgba(8,8,8,.90);
+ --feed-glow:rgba(255,36,36,.10); --feed-base:#050505; --overlay-text:#fff;
+ --nav-height:76px; --header-height:58px; --tabs-height:46px;
+}
+[data-theme=darkening] { --feed-glow:rgba(255,36,36,.17); --soft:rgba(255,36,36,.14); --line:rgba(255,36,36,.28); --surface:#100b0b; }
+[data-theme=dark] { --feed-glow:rgba(255,36,36,.24); --soft:rgba(255,36,36,.16); --line:rgba(255,36,36,.34); --surface:#0c0808; --panel:rgba(4,4,4,.96); }
+/* Preserve the clean Scene 17 / Shot 17E exception, with the same shared app layout. */
+.clean-scene {color-scheme:light;--bg:#fafafa;--surface:#fff;--text:#161616;--muted:#737373;--line:#e5e5e5;--soft:#f4eeee;--panel:rgba(255,255,255,.98);--header:rgba(255,255,255,.96);--feed-glow:rgba(0,0,0,.025);--feed-base:#e7e7e7;--overlay-text:#171717;}
