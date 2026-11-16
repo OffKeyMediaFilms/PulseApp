@@ -1,8 +1,8 @@
 // Vite fills the version and compiled asset list during production build.
 // Scope-specific caches never delete caches belonging to the original /PULSE/ site.
 const PREFIX='pulse-app:'+self.registration.scope+':';
-const CACHE=PREFIX+'048c7267ff49ae37';
-const FILES=["./","./assets/icon-192-D8JoY4ks.png","./assets/index-C9UTavMl.css","./assets/index-CjSm6rJ5.js","./assets/pulse-BRi2ql12.svg","./index.html","./manifest.webmanifest","./public/icons/icon-192.png","./public/icons/icon-512.png","./public/icons/pulse.svg"];
+const CACHE=PREFIX+'c66601b4502ca48c';
+const FILES=["./","./assets/index-COC1E9YY.css","./assets/index-DaFqTLWg.js","./assets/pulse-coral-192-DlH6YT4I.png","./index.html","./manifest-dark.webmanifest","./manifest.webmanifest","./public/icons/icon-192.png","./public/icons/icon-512.png","./public/icons/pulse-coral-192.png","./public/icons/pulse-coral-512.png","./public/icons/pulse-metallic-192.png","./public/icons/pulse-metallic-512.png","./public/icons/pulse.svg","./public/images/branding/pulse-coral-original.jpg","./public/images/branding/pulse-metallic-original.jpg","./public/images/profiles/kerry-official.jpg"];
 const ROOT=new URL(self.registration.scope);
 const SHELL=new Set(FILES.map(file=>new URL(file,ROOT).href));
 self.addEventListener('install',event=>{
